@@ -1,0 +1,16 @@
+{
+  "node_features": 6,
+  "num_nodes": 50,
+  "gcn_hidden": 64,
+  "gcn_out": 32,
+  "lstm_hidden": 128,
+  "lstm_layers": 2,
+  "dropout": 0.3,
+  "lr": 0.001,
+  "weight_decay": 0.0001,
+  "batch_size": 32,
+  "epochs": 50,
+  "early_stop_patience": 10,
+  "seq_len": 12,
+  "save_dir": "models/saved"
+}
