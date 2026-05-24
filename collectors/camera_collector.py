@@ -71,6 +71,41 @@ CAMERA_REGISTRY: Dict[str, Dict] = {
         "lat": 22.5200, "lon": 88.3800,
         "location": "Tollygunge Metro"
     },
+    "cam_004": {
+        "url": "rtsp://192.168.1.13:554/stream1",
+        "lat": 22.5958, "lon": 88.3467,
+        "location": "Howrah Bridge East"
+    },
+    "cam_005": {
+        "url": "rtsp://192.168.1.14:554/stream1",
+        "lat": 22.5553, "lon": 88.3523,
+        "location": "Park Street Crossing"
+    },
+    "cam_006": {
+        "url": "rtsp://192.168.1.15:554/stream1",
+        "lat": 22.5411, "lon": 88.3961,
+        "location": "EM Bypass Bypass Bypass Bypass (Bypass at Ruby)"
+    },
+    "cam_007": {
+        "url": "rtsp://192.168.1.16:554/stream1",
+        "lat": 22.6054, "lon": 88.3936,
+        "location": "VIP Road Airport Gate"
+    },
+    "cam_008": {
+        "url": "rtsp://192.168.1.17:554/stream1",
+        "lat": 22.5354, "lon": 88.3302,
+        "location": "Rashbehari Connector"
+    },
+    "cam_009": {
+        "url": "rtsp://192.168.1.18:554/stream1",
+        "lat": 22.5646, "lon": 88.4318,
+        "location": "Salt Lake Sector V"
+    },
+    "cam_010": {
+        "url": "rtsp://192.168.1.19:554/stream1",
+        "lat": 22.4946, "lon": 88.3195,
+        "location": "Joka Tram Depot"
+    },
 }
 
 
