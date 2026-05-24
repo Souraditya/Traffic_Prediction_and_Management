@@ -1,0 +1,16 @@
+sensor_id,timestamp,latitude,longitude,road_segment,speed_kmh,occupancy_pct,flow_veh_per_hr,headway_sec,sensor_type,quality_flag,congestion_level,hour,day_of_week,is_weekend,is_peak_hour,congestion_index
+loop_001,2026-04-08 15:46:09.940736+00:00,22.5726,88.3639,AJC_Bose_Rd_N,61.6,0.639,777,4.6,inductive_loop,1,light,15,2,0,0,0.0892
+loop_002,2026-04-08 15:46:09.940736+00:00,22.58,88.35,VIP_Rd_E,49.1,0.417,658,5.5,inductive_loop,1,light,15,2,0,0,0.1721
+loop_003,2026-04-08 15:46:09.940736+00:00,22.52,88.38,EM_Bypass_S,12.6,0.479,878,4.1,inductive_loop,1,heavy,15,2,0,0,0.4177
+loop_004,2026-04-08 15:46:09.940736+00:00,22.565,88.375,Park_St_W,19.7,0.437,781,4.6,inductive_loop,1,heavy,15,2,0,0,0.3698
+ir_001,2026-04-08 15:46:09.940736+00:00,22.59,88.34,Ultadanga_Connector,35.9,0.479,723,5.0,infrared,1,moderate,15,2,0,0,0.2611
+loop_001,2026-04-08 15:46:15.598085+00:00,22.5726,88.3639,AJC_Bose_Rd_N,37.9,0.578,802,4.5,inductive_loop,1,moderate,15,2,0,0,0.2482
+loop_002,2026-04-08 15:46:15.598085+00:00,22.58,88.35,VIP_Rd_E,59.3,0.52,882,4.1,inductive_loop,1,light,15,2,0,0,0.1041
+loop_003,2026-04-08 15:46:15.598085+00:00,22.52,88.38,EM_Bypass_S,30.3,0.523,871,4.1,inductive_loop,1,moderate,15,2,0,0,0.299
+loop_004,2026-04-08 15:46:15.598085+00:00,22.565,88.375,Park_St_W,52.2,0.547,784,4.6,inductive_loop,1,light,15,2,0,0,0.1519
+ir_001,2026-04-08 15:46:15.598085+00:00,22.59,88.34,Ultadanga_Connector,38.0,0.355,735,4.9,infrared,1,moderate,15,2,0,0,0.2464
+loop_001,2026-04-08 16:57:31.231191+00:00,22.5726,88.3639,AJC_Bose_Rd_N,50.7,0.153,208,17.3,inductive_loop,1,light,16,2,0,0,0.16
+loop_002,2026-04-08 16:57:31.231191+00:00,22.58,88.35,VIP_Rd_E,69.4,0.161,257,14.0,inductive_loop,1,free_flow,16,2,0,0,0.0344
+loop_003,2026-04-08 16:57:31.231191+00:00,22.52,88.38,EM_Bypass_S,60.0,0.162,188,19.1,inductive_loop,1,light,16,2,0,0,0.0976
+loop_004,2026-04-08 16:57:31.231191+00:00,22.565,88.375,Park_St_W,69.5,0.154,254,14.2,inductive_loop,1,free_flow,16,2,0,0,0.0337
+ir_001,2026-04-08 16:57:31.231191+00:00,22.59,88.34,Ultadanga_Connector,74.4,0.044,206,17.5,infrared,1,free_flow,16,2,0,0,0.0002
