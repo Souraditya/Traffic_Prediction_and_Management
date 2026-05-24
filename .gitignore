@@ -14,8 +14,10 @@ env/
 # Environment variables
 .env
 
-# Data files
-data/raw/
+# Data files (ignore large GPS files only)
+data/raw/gps/
+data/raw/road_network/
+data/preprocessed/gps/
 
 # Preprocessed data (keep merged CSV, ignore subdirs)
 data/preprocessed/camera/

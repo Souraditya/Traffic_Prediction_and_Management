@@ -1,0 +1,6 @@
+timestamp,latitude,longitude,zone_id,temperature_c,precipitation_mm,visibility_km,wind_speed_kmh,weather_code,weather_desc,traffic_impact
+2026-04-08T22:15,22.622600000000002,88.3639,north,24.6,0.0,24.14,1.8,1,mainly_clear,0.0
+2026-04-08T22:15,22.5226,88.3639,south,25.1,0.1,24.14,2.9,1,mainly_clear,0.05
+2026-04-08T22:30,22.5726,88.4139,east,24.5,0.0,16.36,2.2,3,overcast,0.0
+2026-04-08T22:30,22.5726,88.3139,west,24.5,0.0,24.14,2.2,3,overcast,0.0
+2026-04-08T22:30,22.5726,88.3639,centre,24.4,0.0,24.14,2.2,3,overcast,0.0
