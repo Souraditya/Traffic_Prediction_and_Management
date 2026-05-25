@@ -39,3 +39,7 @@ Thumbs.db
 # Pytest cache
 .pytest_cache/
 cache/
+data/raw/sensor/
+data/preprocessed/sensor/
+data/preprocessed/node_features.npy
+data/preprocessed/targets.npy
