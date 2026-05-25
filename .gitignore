@@ -3,43 +3,39 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
-
+ 
 # Virtual environment
 venv/
 env/
-
+ 
 # VS Code settings
 .vscode/
-
+ 
 # Environment variables
 .env
-
-# Data files (ignore large GPS files only)
-data/raw/gps/
+ 
+# Data files (ignore road network only - too large)
 data/raw/road_network/
-data/preprocessed/gps/
-
-# Preprocessed data (keep merged CSV, ignore subdirs)
-data/preprocessed/gps/
-
+ 
 # Trained model weights (large binary files)
 models/saved/*.pt
 models/saved/*.json
-
+ 
 # Evaluation outputs (generated on run)
 evaluation/
-
+ 
 # Logs
 *.log
-
+ 
 # OS files
 .DS_Store
 Thumbs.db
-
+ 
 # Pytest cache
 .pytest_cache/
 cache/
-data/raw/sensor/
-data/preprocessed/sensor/
+ 
+# Large numpy graph files (regenerate with train.py)
 data/preprocessed/node_features.npy
 data/preprocessed/targets.npy
+ 
