@@ -31,7 +31,6 @@ CAMERA_REGISTRY = {
 }
  
 # ── Per-camera traffic characteristics ───────────────────────────────────────
-# Each camera has slightly different traffic patterns
 CAMERA_PROFILES = {
     "cam_001": {"base_cars": 15, "base_bikes": 8,  "base_buses": 2, "base_trucks": 1, "rush_scale": 3.5},
     "cam_002": {"base_cars": 12, "base_bikes": 6,  "base_buses": 3, "base_trucks": 2, "rush_scale": 3.0},
@@ -55,8 +54,8 @@ timestamps = pd.date_range(
 T = len(timestamps)
  
 # ── Output directories ────────────────────────────────────────────────────────
-raw_dir   = Path("data/raw/camera")
-prep_dir  = Path("data/preprocessed/camera")
+raw_dir  = Path("data/raw/camera")
+prep_dir = Path("data/preprocessed/camera")
 raw_dir.mkdir(parents=True, exist_ok=True)
 prep_dir.mkdir(parents=True, exist_ok=True)
  
@@ -72,7 +71,6 @@ for cam_id, meta in CAMERA_REGISTRY.items():
         is_peak = (8 <= hour <= 10) or (17 <= hour <= 20)
         scale   = profile["rush_scale"] if is_rush else 1.0
  
-        # Add noise
         noise = lambda: np.random.normal(1.0, 0.15)
  
         cars   = max(0, int(profile["base_cars"]   * scale * noise()))
@@ -81,42 +79,48 @@ for cam_id, meta in CAMERA_REGISTRY.items():
         trucks = max(0, int(profile["base_trucks"] * scale * noise()))
         total  = cars + bikes + buses + trucks
  
-        # Speed: inversely related to congestion
         base_speed = 45 - (total / 8)
         avg_speed  = max(5.0, round(base_speed + np.random.normal(0, 3), 1))
  
-        # Congestion index
         congestion = round(min(1.0, max(0.0, total / 120 + np.random.normal(0, 0.02))), 4)
  
-        # Incident: rare, more likely in rush hour
         incident_prob = 0.06 if is_peak else 0.02
         incident = int(np.random.choice([0, 1, 2],
                        p=[1 - incident_prob, incident_prob * 0.7, incident_prob * 0.3]))
  
-        # YOLO confidence (mock)
         confidence = round(np.random.uniform(0.78, 0.95), 3)
  
+        # ── ByteTrack columns ─────────────────────────────────────────────────
+        # active_tracks: one confirmed track per detected vehicle
+        active_tracks = total
+ 
+        # flow_rate_veh_hr: per-minute count extrapolated to hourly rate with noise
+        flow_rate_veh_hr = round(
+            max(0.0, total * 60 + np.random.normal(0, max(1, total * 2))), 1
+        )
+ 
         records.append({
-            "timestamp":     ts.isoformat(),
-            "camera_id":     cam_id,
-            "location":      meta["location"],
-            "latitude":      meta["lat"],
-            "longitude":     meta["lon"],
-            "cars":          cars,
-            "motorcycles":   bikes,
-            "buses":         buses,
-            "trucks":        trucks,
-            "total_vehicles": total,
-            "avg_speed_kmh": avg_speed,
-            "incident_flag": incident > 0,
-            "incident_count": incident,
-            "confidence":    confidence,
+            "timestamp":        ts.isoformat(),
+            "camera_id":        cam_id,
+            "location":         meta["location"],
+            "latitude":         meta["lat"],
+            "longitude":        meta["lon"],
+            "cars":             cars,
+            "motorcycles":      bikes,
+            "buses":            buses,
+            "trucks":           trucks,
+            "total_vehicles":   total,
+            "avg_speed_kmh":    avg_speed,
+            "incident_flag":    incident > 0,
+            "incident_count":   incident,
+            "confidence":       confidence,
             "congestion_index": congestion,
+            "active_tracks":    active_tracks,
+            "flow_rate_veh_hr": flow_rate_veh_hr,
         })
  
     df_cam = pd.DataFrame(records)
  
-    # Save per-camera raw CSV
     cam_path = raw_dir / f"{cam_id}.csv"
     df_cam.to_csv(cam_path, index=False)
     print(f"Saved {cam_path}  ({len(df_cam)} rows)")
@@ -134,4 +138,8 @@ print(f"Total rows: {len(df_all)}")
 print(f"Cameras   : {df_all['camera_id'].nunique()}")
 print(f"Columns   : {df_all.columns.tolist()}")
 print(f"\nSample:")
-print(df_all[["timestamp","camera_id","location","total_vehicles","avg_speed_kmh","congestion_index","incident_count"]].head(10).to_string())
+print(df_all[[
+    "timestamp", "camera_id", "location",
+    "total_vehicles", "avg_speed_kmh", "congestion_index",
+    "incident_count", "active_tracks", "flow_rate_veh_hr"
+]].head(10).to_string())
