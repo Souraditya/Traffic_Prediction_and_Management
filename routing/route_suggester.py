@@ -222,6 +222,7 @@ class RouteSuggester:
         self.xgb_model   = None
         self.stgcn_model = None
         self.adjacency   = None
+        self.adj_tensor  = None
         self.node_features = None     # full array shape (T, N, F)
 
         self._load_xgboost()
@@ -252,7 +253,6 @@ class RouteSuggester:
         try:
             import torch
             from models.stgcn_lstm import TrafficSTGCN_LSTM
-
             model_path = self.model_dir / "stgcn_best.pt"
             adj_path   = self.adjacency_path
 
@@ -263,17 +263,31 @@ class RouteSuggester:
                 print(f"[Router] Adjacency matrix not found at {adj_path}")
                 return
 
-            adj = np.load(str(adj_path))
+            adj        = np.load(str(adj_path))
             adj_tensor = torch.FloatTensor(adj)
+            self.adj_tensor = adj_tensor  # stored for inference
 
-            self.stgcn_model = TrafficSTGCN_LSTM(
-                n_nodes    = STGCN_N_NODES,
-                n_features = STGCN_N_FEATURES,
-                adj        = adj_tensor,
+            # Constructor: TrafficSTGCN_LSTM(node_features, gcn_hidden=64,
+            #   gcn_out=32, lstm_hidden=128, lstm_layers=2, num_nodes=50, dropout=0.3)
+            # Note: adj is stored internally in the model via register_buffer,
+            # not passed to the constructor in this architecture.
+            model = TrafficSTGCN_LSTM(
+                node_features = STGCN_N_FEATURES,  # 6
+                num_nodes     = STGCN_N_NODES,      # 10
             )
+
+
             checkpoint = torch.load(str(model_path), map_location="cpu")
-            self.stgcn_model.load_state_dict(checkpoint["model_state_dict"])
-            self.stgcn_model.eval()
+            # Handle both raw state_dict and wrapped checkpoint
+            if isinstance(checkpoint, dict) and "model_state" in checkpoint:
+                model.load_state_dict(checkpoint["model_state"])
+            elif isinstance(checkpoint, dict) and "model_state_dict" in checkpoint:
+                model.load_state_dict(checkpoint["model_state_dict"])
+            else:
+                model.load_state_dict(checkpoint)
+
+            model.eval()
+            self.stgcn_model = model
             print(f"[Router] STGCN-LSTM loaded    <- {model_path}")
 
         except ImportError as e:
@@ -348,15 +362,25 @@ class RouteSuggester:
 
         try:
             sys.path.insert(0, str(Path(__file__).parent.parent))
-            from models.xgboost_model import build_features
-            row_df = pd.DataFrame([row])
-            row_df = build_features(row_df)
+            from models.xgboost_model import FEATURE_COLS, build_features
 
-            feature_cols = [c for c in row_df.columns
-                            if c not in ('timestamp', 'congestion_level',
-                                         'weather_category', 'weather_condition')]
-            xgb_pred = float(self.xgb_model.predict(row_df[feature_cols].values)[0])
-            xgb_pred = float(np.clip(xgb_pred, 0.0, 1.0))
+            # Build features on the full CSV so lag/rolling features compute
+            # correctly, then take the last row matching our timestamp
+            df = pd.read_csv(self.data_path)
+            df['timestamp'] = pd.to_datetime(df['timestamp'], utc=True)
+            df = build_features(df)
+
+            # Find the row index matching our loaded row's timestamp
+            row_ts = pd.to_datetime(row.get('timestamp'), utc=True)
+            if row_ts in df['timestamp'].values:
+                target = df[df['timestamp'] == row_ts]
+            else:
+                target = df.tail(1)
+
+            # Use only the 36 features the model was trained on
+            available = [c for c in FEATURE_COLS if c in target.columns]
+            xgb_pred  = float(self.xgb_model.predict(target[available].values)[0])
+            xgb_pred  = float(np.clip(xgb_pred, 0.0, 1.0))
 
             # Apply node residuals to produce spatially differentiated scores
             node_scores = np.clip(xgb_pred * NODE_RESIDUALS, 0.0, 1.0)
@@ -398,8 +422,10 @@ class RouteSuggester:
             x = torch.FloatTensor(window).unsqueeze(0)
 
             with torch.no_grad():
-                pred = self.stgcn_model(x)  # shape: (1, 10)
+                output = self.stgcn_model(x, self.adj_tensor)  # (1,10) or ((1,10), hidden)
 
+            # forward() returns (predictions, hidden_state) tuple
+            pred   = output[0] if isinstance(output, tuple) else output
             scores = pred.squeeze(0).numpy()  # shape: (10,)
             return np.clip(scores, 0.0, 1.0)
 
